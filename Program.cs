@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using ProvaPub.Repository;
+using ProvaPub.Common;
 using ProvaPub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,15 +12,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<RandomService>();
-builder.Services.AddDbContext<TestDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
+
+// Configurar banco de dados usando ConfigeServiceDataBase
+var connectionString = builder.Configuration.GetConnectionString("ctx");
+
+ConfigureServiceDependencyInjection.ConfigureDependenciesService(builder.Services);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

@@ -1,8 +1,7 @@
 ﻿namespace ProvaPub.Models
 {
-    public class RandomNumber
+    public class RandomNumber : BaseEntity
     {
-        public int Id { get; set; }
         public int Number { get; set; }
     }
 }
