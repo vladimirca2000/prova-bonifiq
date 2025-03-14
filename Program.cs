@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using ProvaPub.Common;
+using ProvaPub.Interfaces.Repositories;
+using ProvaPub.Interfaces.Services;
+using ProvaPub.Repository;
+using ProvaPub.Repository.Data;
 using ProvaPub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,12 +15,20 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<RandomService>();
+//builder.Services.AddSingleton<RandomService>();
 
 // Configurar banco de dados usando ConfigeServiceDataBase
-var connectionString = builder.Configuration.GetConnectionString("ctx");
+//var connectionString = builder.Configuration.GetConnectionString("ctx");
 
-ConfigureServiceDependencyInjection.ConfigureDependenciesService(builder.Services);
+// Configuração do banco de dados
+builder.Services.AddDbContext<TestDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
+
+// Registre os serviços que dependem do contexto
+builder.Services.AddScoped<IRandomRepository, RandomRepository>();
+builder.Services.AddTransient<IRandomService, RandomService>();
+
+//ConfigureServiceDependencyInjection.ConfigureDependenciesService(builder.Services);
 
 var app = builder.Build();
 

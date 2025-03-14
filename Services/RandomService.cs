@@ -21,22 +21,20 @@ namespace ProvaPub.Services
 
         public async Task<int> GetRandom()
         {
-            int seed = Guid.NewGuid().GetHashCode();
-            List<int> listaCompleta = Enumerable.Range(0, 101).ToList();
-
+            /// Poderia ser variavel de ambiente ou appsettings 
+            var numeroMaximoItens = 100;
+            List<int> listaCompleta = Enumerable.Range(1, numeroMaximoItens).ToList();
 
             var listaSorteada = await _randomRepository.GetRandom();
-            if (listaSorteada.Count() == 100)
-                throw new Exception("Não é possível sortear mais números");
-
-            var QuantidadeNumerosSorteados = listaSorteada.Count();
-            var number = new Random(seed).Next(100 - QuantidadeNumerosSorteados);
+            if (listaSorteada.Count() >= numeroMaximoItens)
+                return -1;
 
             List<int> numerosFaltantes = listaCompleta.Except(listaSorteada).ToList();
 
-            if (!numerosFaltantes.Contains(number))
-                throw new Exception("Número já sorteado");
-            
+            int seed = Guid.NewGuid().GetHashCode();
+            var random = new Random(seed);
+            var number = numerosFaltantes[random.Next(numerosFaltantes.Count)];
+
             var randomNumber = new RandomNumber()
             {
                 Number = number
@@ -44,6 +42,5 @@ namespace ProvaPub.Services
             await _randomRepository.InsertAsync(randomNumber);
             return number;
         }
-
     }
 }
