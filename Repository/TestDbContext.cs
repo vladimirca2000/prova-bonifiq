@@ -26,6 +26,8 @@ namespace ProvaPub.Repository
 			//	modelBuilder.Entity<Product>().HasData(getProductSeed());
 
 			modelBuilder.ApplyConfiguration(new Mapping.RandomNumberMap());
+            modelBuilder.ApplyConfiguration(new Mapping.ProductMap());
+            modelBuilder.ApplyConfiguration(new Mapping.CustomerMap());
 
             base.OnModelCreating(modelBuilder);
         }

@@ -1,9 +1,7 @@
 ﻿namespace ProvaPub.Models
 {
-	public class Product
-	{
-		public int Id { get; set; }	
-
+	public class Product : BaseEntity
+    {
 		public string Name { get; set; }
 	}
 }

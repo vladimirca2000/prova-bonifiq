@@ -25,8 +25,12 @@ builder.Services.AddDbContext<TestDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
 
 // Registre os serviços que dependem do contexto
-builder.Services.AddScoped<IRandomRepository, RandomRepository>();
+builder.Services.AddTransient<IRandomRepository, RandomRepository>();
 builder.Services.AddTransient<IRandomService, RandomService>();
+builder.Services.AddTransient<IProductRepository, ProductRepository>();
+builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
+builder.Services.AddTransient<ICustomerService, CustomerService>();
 
 //ConfigureServiceDependencyInjection.ConfigureDependenciesService(builder.Services);
 

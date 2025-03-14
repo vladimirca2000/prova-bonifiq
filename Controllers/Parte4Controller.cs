@@ -18,18 +18,19 @@ namespace ProvaPub.Controllers
 	[Route("[controller]")]
 	public class Parte4Controller :  ControllerBase
 	{
-        TestDbContext _ctx;
-        public Parte4Controller(TestDbContext ctx)
-        {
-            _ctx = ctx;
-        }
+        //TestDbContext _ctx;
+        //public Parte4Controller(TestDbContext ctx)
+        //{
+        //    _ctx = ctx;
+        //}
 
         [HttpGet("CanPurchase")]
 		public async Task<bool> CanPurchase(int customerId, decimal purchaseValue)
 		{
-			CustomerService svc = new CustomerService(_ctx);
+            //CustomerService svc = new CustomerService(_ctx);
 
-			return await svc.CanPurchase(customerId, purchaseValue);
-		}
+            //return await svc.CanPurchase(customerId, purchaseValue);
+            return false;
+        }
 	}
 }

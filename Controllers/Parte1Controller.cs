@@ -10,7 +10,7 @@ namespace ProvaPub.Controllers;
 /// /// 2 - Tome cuidado 
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class Parte1Controller : ControllerBase
 {
     private readonly IRandomService _randomService;
