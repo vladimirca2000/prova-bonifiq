@@ -36,8 +36,16 @@ namespace ProvaPub.Controllers
         [HttpGet("customers")]
         public async Task<IActionResult> GetCustomers(int page)
         {
-            var customers = await _customerService.ListCustomers(page);
-            return Ok(customers);
+            try
+            {
+                var customers = await _customerService.ListCustomers(page);
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                /// Poderia ser tratado com um retorno padrão com uma mensagem amigavel ao usuario e mostrar o erro no log
+                return BadRequest($"Erro inesperado: {ex.Message}");
+            }
         }
     }
 }

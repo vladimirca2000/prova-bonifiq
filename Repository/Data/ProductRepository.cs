@@ -30,6 +30,4 @@ public class ProductRepository : BaseRepository<Product>, IProductRepository
             .ToListAsync();
         return products.Any();
     }
-
-
 }

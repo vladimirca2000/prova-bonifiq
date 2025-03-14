@@ -1,24 +1,43 @@
 ﻿using ProvaPub.Interfaces.Repositories;
 using ProvaPub.Interfaces.Services;
 using ProvaPub.Models;
+using ProvaPub.Repository.Data;
 
 namespace ProvaPub.Services
 {
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customerRepository;
+        /// <summary>
+        /// Quantidade de itens por página poderia ser passada por parametro ou ser variavel de ambiente ou appsettings
+        /// </summary>
+        private readonly int pageSize = 10;
 
         public CustomerService(ICustomerRepository customerRepository)
         {
             _customerRepository = customerRepository;
         }
 
-        public Task<IEnumerable<Customer>> ListCustomers(int page)
+        public async Task<IEnumerable<Customer>> ListCustomers(int page)
         {
-            return _customerRepository.SelectAllAsync();
+            if (_customerRepository.HasNext(page, pageSize).Result == false)
+                throw new Exception("Não há mais produtos disponíveis para exibir");
+
+            var customers = await _customerRepository.ListCustumeres(page, pageSize);
+            return customers ?? Enumerable.Empty<Customer>();
         }
 
+        public async Task<IEnumerable<Customer>> GetAllCustumers()
+        {
+            var customers = await _customerRepository.SelectAllAsync();
+            return customers;
+        }
 
+        public int CountProduct()
+        {
+            var customers = GetAllCustumers().Result;
+            return customers.Count();
+        }
 
 
 

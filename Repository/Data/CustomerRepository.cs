@@ -11,5 +11,24 @@ namespace ProvaPub.Repository.Data
         {
             _dataset = context.Set<Customer>();
         }
+
+        public async Task<IEnumerable<Customer>> ListCustumeres(int page, int pageSize)
+        {
+            var customers = await _dataset
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            return customers;
+        }
+
+        public async Task<bool> HasNext(int page, int pageSize)
+        {
+            var customers = await _dataset
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            return customers.Any();
+        }
+
     }
 }

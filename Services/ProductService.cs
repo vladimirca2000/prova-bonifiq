@@ -7,8 +7,7 @@ namespace ProvaPub.Services
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _productRepository;
-
+        private readonly IProductRepository _productRepository;        
         /// <summary>
         /// Quantidade de itens por página poderia ser passada por parametro ou ser variavel de ambiente ou appsettings
         /// </summary>
@@ -19,14 +18,14 @@ namespace ProvaPub.Services
             _productRepository = productRepository;
         }
 
-        public async Task<IEnumerable<Product>?> ListProducts(int page)
+        public async Task<IEnumerable<Product>> ListProducts(int page)
         {
             if(_productRepository.HasNext(page, pageSize).Result == false)
                 ///Poderia ter objeto de retorno padrão com uma mensagem amigavel ao usuario
                 throw new Exception("Não há mais produtos disponíveis para exibir");
 
             var products = await _productRepository.ListProducts(page, pageSize);
-            return products;
+            return products ?? Enumerable.Empty<Product>();
         }
 
         public async Task<IEnumerable<Product>> GetAllProduct()
