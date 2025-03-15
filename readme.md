@@ -1,5 +1,5 @@
 # Quase no fim
-## Falta apenas Criar novo metode pagamento para validar a parte 3 e faser a parte 4
+## Falta apenas Criar novo metodo de pagamento para validar a parte 3 e fazer a parte 4
 ### Irei terminar no Domingo, pois amanhã não poderei trabalhar no desafio  e entregar na segunda.
 
 --------
