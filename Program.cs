@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProvaPub.Common;
+using ProvaPub.Interfaces;
 using ProvaPub.Interfaces.Repositories;
 using ProvaPub.Interfaces.Services;
 using ProvaPub.Repository;
@@ -31,6 +32,8 @@ builder.Services.AddTransient<IProductRepository, ProductRepository>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrdemRepository, OrdemRepository>();
 
 //ConfigureServiceDependencyInjection.ConfigureDependenciesService(builder.Services);
 

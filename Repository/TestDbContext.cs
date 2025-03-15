@@ -28,6 +28,7 @@ namespace ProvaPub.Repository
 			modelBuilder.ApplyConfiguration(new Mapping.RandomNumberMap());
             modelBuilder.ApplyConfiguration(new Mapping.ProductMap());
             modelBuilder.ApplyConfiguration(new Mapping.CustomerMap());
+            modelBuilder.ApplyConfiguration(new Mapping.OrderMap());
 
             base.OnModelCreating(modelBuilder);
         }
