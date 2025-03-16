@@ -20,32 +20,26 @@ namespace ProvaPub.Controllers
         [HttpPost("orders")]
         public async Task<IActionResult> PlaceOrder(string paymentMethod, decimal paymentValue, int customerId)
         {
-            var order = await _orderService.PayOrder(paymentMethod, paymentValue, customerId);
-
-            var orderResponse = new
+            try
             {
-                order.Id,
-                order.Value,
-                order.CustomerId,
-                OrderDate = TimeZoneInfo.ConvertTimeFromUtc(order.OrderDate,TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo")).ToString("yyyy-MM-dd HH:mm:ss", new CultureInfo("pt-BR"))
-                //OrderDate = TimeZoneInfo.ConvertTimeFromUtc(order.OrderDate, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time")).ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
-            };
+                var order = await _orderService.PayOrder(paymentMethod, paymentValue, customerId);
 
-            return Ok(orderResponse);
+                var orderResponse = new
+                {
+                    order.Id,
+                    order.Value,
+                    order.CustomerId,
+                    OrderDate = TimeZoneInfo.ConvertTimeFromUtc(order.OrderDate, TimeZoneInfo.FindSystemTimeZoneById("America/Sao_Paulo")).ToString("yyyy-MM-dd HH:mm:ss", new CultureInfo("pt-BR"))
+                };
+
+                return Ok(orderResponse);
+            }
+            catch (Exception ex)
+            {
+                /// Poderia ser tratado com um retorno padrão com uma mensagem amigavel ao usuario e mostrar o erro no log
+                return BadRequest($"Erro inesperado: {ex.Message}");
+            }
+
         }
     }
 }
-
-    //      [HttpGet("orders")]
-    //public async Task<Order> PlaceOrder(string paymentMethod, decimal paymentValue, int customerId)
-    //{
-    //          var contextOptions = new DbContextOptionsBuilder<TestDbContext>()
-    //  .UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=Teste;Trusted_Connection=True;")
-    //  .Options;
-
-    //          using var context = new TestDbContext(contextOptions);
-
-    //          return await new OrderService(context).PayOrder(paymentMethod, paymentValue, customerId);
-    //}
-
-

@@ -4,5 +4,5 @@ namespace ProvaPub.Interfaces.Repositories;
 
 public interface IOrdemRepository : IRepository<Order>
 {
-    //Task<Order> InsertOrder(Order order);
+
 }

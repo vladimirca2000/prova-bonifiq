@@ -11,7 +11,7 @@ public class ProductService : IProductService
     /// <summary>
     /// Quantidade de itens por página poderia ser passada por parametro ou ser variavel de ambiente ou appsettings
     /// </summary>
-    private readonly int pageSize = 10;
+    private readonly int pageSize = 100;
 
     public ProductService(IProductRepository productRepository)
     {

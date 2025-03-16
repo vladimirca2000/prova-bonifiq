@@ -12,6 +12,7 @@ namespace ProvaPub.Services
                 "pix" => new PixPayment(),
                 "creditcard" => new CreditCardPayment(),
                 "paypal" => new PayPalPayment(),
+                "money" => new MoneyPayment(),
                 _ => throw new ArgumentException("Método de pagamento inválido")
             };
         }
