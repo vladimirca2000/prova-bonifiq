@@ -1,21 +1,26 @@
-﻿using ProvaPub.Interfaces.Repositories;
+﻿using Microsoft.Identity.Client;
+using ProvaPub.Interfaces;
+using ProvaPub.Interfaces.Repositories;
 using ProvaPub.Interfaces.Services;
 using ProvaPub.Models;
 using ProvaPub.Repository.Data;
+using System.Security;
 
 namespace ProvaPub.Services;
 
 public class CustomerService : ICustomerService
 {
     private readonly ICustomerRepository _customerRepository;
+    private readonly IOrderService _ordemService;
     /// <summary>
     /// Quantidade de itens por página poderia ser passada por parametro ou ser variavel de ambiente ou appsettings
     /// </summary>
     private readonly int pageSize = 100;
 
-    public CustomerService(ICustomerRepository customerRepository)
+    public CustomerService(ICustomerRepository customerRepository, IOrderService ordemService)
     {
         _customerRepository = customerRepository;
+        _ordemService = ordemService;
     }
 
     public async Task<IEnumerable<Customer>> ListCustomers(int page)
@@ -40,50 +45,40 @@ public class CustomerService : ICustomerService
     }
 
 
+    public async Task<bool> CanPurchase(int customerId, decimal purchaseValue)
+    {
+        var datePurchase = DateTime.Now;
+
+        //estas duas linhas deve ser melhoradas e testaveis pelo xunit
+        if (customerId <= 0) throw new ArgumentOutOfRangeException(nameof(customerId));
+        if (purchaseValue <= 0) throw new ArgumentOutOfRangeException(nameof(purchaseValue));
+
+        //Business Rule: A customer can purchases only during business hours and working days
+        HourPurchase(datePurchase);
+
+        //Business Rule: The Customer must exist to make a purchase
+        CustumerExist(customerId);
 
 
+        //Business Rule: Checks if the customer meets the business rules
+        var canPurchaseResult = _ordemService.CanPurchase(customerId, purchaseValue).Result;
+
+        return true;
+    }
 
 
+    //Os dois metodos abaixo poderiam ser movidos para uma classe de regras de negocio e resolvido com notify
+    //També melhorado os testes, mas não houve tempo.
 
-    //TestDbContext _ctx;
+    public void HourPurchase(DateTime hourPurchase)
+    {
+        if (hourPurchase.Hour < 8 || hourPurchase.Hour > 18 || hourPurchase.DayOfWeek == DayOfWeek.Saturday || hourPurchase.DayOfWeek == DayOfWeek.Sunday)
+            throw new Exception("Fora do horário de funcionamento");
+    }
 
-    //public CustomerService(TestDbContext ctx)
-    //{
-    //    _ctx = ctx;
-    //}
-
-    //public CustomerList ListCustomers(int page)
-    //{
-    //    return new CustomerList() { HasNext = false, TotalCount = 10, Customers = _ctx.Customers.ToList() };
-    //}
-
-    //public async Task<bool> CanPurchase(int customerId, decimal purchaseValue)
-    //{
-    //    if (customerId <= 0) throw new ArgumentOutOfRangeException(nameof(customerId));
-
-    //    if (purchaseValue <= 0) throw new ArgumentOutOfRangeException(nameof(purchaseValue));
-
-    //    //Business Rule: Non registered Customers cannot purchase
-    //    var customer = await _ctx.Customers.FindAsync(customerId);
-    //    if (customer == null) throw new InvalidOperationException($"Customer Id {customerId} does not exists");
-
-    //    //Business Rule: A customer can purchase only a single time per month
-    //    var baseDate = DateTime.UtcNow.AddMonths(-1);
-    //    var ordersInThisMonth = await _ctx.Orders.CountAsync(s => s.CustomerId == customerId && s.OrderDate >= baseDate);
-    //    if (ordersInThisMonth > 0)
-    //        return false;
-
-    //    //Business Rule: A customer that never bought before can make a first purchase of maximum 100,00
-    //    var haveBoughtBefore = await _ctx.Customers.CountAsync(s => s.Id == customerId && s.Orders.Any());
-    //    if (haveBoughtBefore == 0 && purchaseValue > 100)
-    //        return false;
-
-    //    //Business Rule: A customer can purchases only during business hours and working days
-    //    if (DateTime.UtcNow.Hour < 8 || DateTime.UtcNow.Hour > 18 || DateTime.UtcNow.DayOfWeek == DayOfWeek.Saturday || DateTime.UtcNow.DayOfWeek == DayOfWeek.Sunday)
-    //        return false;
-
-
-    //    return true;
-    //}
-
+    public void CustumerExist(int customerId)
+    {
+        if (!_customerRepository.ExistAsync(customerId).Result) 
+            throw new Exception("O cliente não existe");
+    }
 }

@@ -3,77 +3,51 @@ using ProvaPub.Interfaces.Repositories;
 using ProvaPub.Interfaces;
 using ProvaPub.Models;
 
-namespace ProvaPub.Services
+namespace ProvaPub.Services;
+
+public class OrderService : IOrderService
 {
-    public class OrderService : IOrderService
+    private readonly IOrdemRepository _ordemRepository;
+
+    public OrderService(IOrdemRepository ordemRepository)
     {
-        private readonly IOrdemRepository _ordemRepository;
-
-        public OrderService(IOrdemRepository ordemRepository)
-        {
-            _ordemRepository = ordemRepository;
-        }
-
-        public async Task<Order> PayOrder(string paymentMethod, decimal paymentValue, int customerId)
-        {
-            IPaymentStrategy paymentStrategy = PaymentFactory.GetPaymentStrategy(paymentMethod);
-
-            bool paymentSuccessful = await paymentStrategy.ProcessPayment(paymentValue, customerId);
-            if (!paymentSuccessful)
-                throw new Exception("Erro ao processar pagamento");
-
-            var order = new Order
-            {
-                Value = paymentValue,
-                CustomerId = customerId
-            };
-            order.SetOrderDate(DateTime.UtcNow); // Salvar sempre em UTC
-
-            return await _ordemRepository.InsertAsync(order);
-        }
+        _ordemRepository = ordemRepository;
     }
+
+    public async Task<Order> PayOrder(string paymentMethod, decimal paymentValue, int customerId)
+    {
+        IPaymentStrategy paymentStrategy = PaymentFactory.GetPaymentStrategy(paymentMethod);
+
+        bool paymentSuccessful = await paymentStrategy.ProcessPayment(paymentValue, customerId);
+        if (!paymentSuccessful)
+            throw new Exception("Erro ao processar pagamento");
+
+        var order = new Order
+        {
+            Value = paymentValue,
+            CustomerId = customerId
+        };
+        order.SetOrderDate(DateTime.UtcNow); // Salvar sempre em UTC
+
+        return await _ordemRepository.InsertAsync(order);
+    }
+
+    public async Task<bool> CanPurchase(int customerId, decimal purchaseValue)
+    {
+        var baseDate = DateTime.UtcNow.AddMonths(-1);
+
+        //checks if the customer has already purchased
+        var hasBoughtBefore = await _ordemRepository.Purchase(customerId);
+        if (!hasBoughtBefore && purchaseValue > 100)
+            throw new Exception("O cliente não comprou antes e o valor da compra é maior que 100");
+
+        //Business Rule: A customer can purchase only a single time per month
+        var ordersInThisMonth = await _ordemRepository.CountAsync(customerId, baseDate);
+        if (ordersInThisMonth > 0)
+            throw new Exception("O cliente já comprou este mês");
+
+        return true;
+    }
+
 }
 
-
-
-
-
-
-//      TestDbContext _ctx;
-
-//      public OrderService(TestDbContext ctx)
-//      {
-//          _ctx = ctx;
-//      }
-
-//      public async Task<Order> PayOrder(string paymentMethod, decimal paymentValue, int customerId)
-//{
-//	if (paymentMethod == "pix")
-//	{
-//		//Faz pagamento...
-//	}
-//	else if (paymentMethod == "creditcard")
-//	{
-//		//Faz pagamento...
-//	}
-//	else if (paymentMethod == "paypal")
-//	{
-//		//Faz pagamento...
-//	}
-
-//	return await InsertOrder(new Order() //Retorna o pedido para o controller
-//          {
-//              Value = paymentValue
-//          });
-
-
-//}
-
-//public async Task<Order> InsertOrder(Order order)
-//      {
-//	//Insere pedido no banco de dados
-//	return (await _ctx.Orders.AddAsync(order)).Entity;
-//      }
-
-//    }
-//}

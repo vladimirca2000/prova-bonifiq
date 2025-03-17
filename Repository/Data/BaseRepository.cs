@@ -46,7 +46,7 @@ public class BaseRepository<T> : IRepository<T> where T : BaseEntity
 
     public async Task<T?> SelectByIdAsync(int id)
     {
-        var result = await _dataset.SingleOrDefaultAsync(p => p.Id.Equals(id));
+        T? result = await _dataset.SingleOrDefaultAsync(p => p.Id.Equals(id));
         return result;
     }
 

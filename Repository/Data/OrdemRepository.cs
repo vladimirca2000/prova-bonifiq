@@ -12,6 +12,19 @@ namespace ProvaPub.Repository.Data
         {
             _dataset = context.Set<Order>();
         }
-        
+
+        public Task<int> CountAsync(int customerId, DateTime baseDate)
+        {
+            var numeroDeOrdemMes = _dataset.CountAsync(s => s.CustomerId == customerId && s.OrderDate >= baseDate);
+            return numeroDeOrdemMes;
+        }
+
+        public async Task<bool> Purchase(int customerId)
+        {
+
+            var Comprou = await _dataset.AnyAsync(s => s.CustomerId.Equals(customerId));
+            return Comprou;
+
+        }
     }
 }
