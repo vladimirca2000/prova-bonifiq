@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using ProvaPub.Common;
 using ProvaPub.Interfaces;
 using ProvaPub.Interfaces.Repositories;
 using ProvaPub.Interfaces.Services;
@@ -18,9 +17,6 @@ builder.Services.AddSwaggerGen();
 
 //builder.Services.AddSingleton<RandomService>();
 
-// Configurar banco de dados usando ConfigeServiceDataBase
-//var connectionString = builder.Configuration.GetConnectionString("ctx");
-
 // Configuração do banco de dados
 builder.Services.AddDbContext<TestDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ctx")));
@@ -34,8 +30,6 @@ builder.Services.AddTransient<ICustomerRepository, CustomerRepository>();
 builder.Services.AddTransient<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrdemRepository, OrdemRepository>();
-
-//ConfigureServiceDependencyInjection.ConfigureDependenciesService(builder.Services);
 
 var app = builder.Build();
 
